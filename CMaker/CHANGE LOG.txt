@@ -1,0 +1,1 @@
+I added magx, magy, and magz to the observation. added these values to the checksum on the transmitter, but not the receiver
