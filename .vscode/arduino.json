@@ -1,0 +1,5 @@
+{
+    "board": "Seeeduino:avr:V4",
+    "sketch": "DS18B20\\one-wire-temp.ino",
+    "port": "COM3"
+}
