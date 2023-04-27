@@ -1,0 +1,9 @@
+CMakerCam  // camera name
+11  // framesize 11 is hd 720p 1280x720 - for ov2640 camera 8=vga, 9=svga, 10=xga, 11=hd, 12=sxga, 13=uxga - for ov5640 camera add 14=fhd, 17=qxga, 18=qhd, 21=qsxga
+1800  // length of video in seconds
+0  // interval - ms between recording frames 
+1  // speedup - multiply framerate 
+0  // streamdelay - ms between streaming frames
+MST7MDT	//GMT // timezone
+Pixel_5364  // ssid wifi name
+795cu99knt51qcq  // ssid password
