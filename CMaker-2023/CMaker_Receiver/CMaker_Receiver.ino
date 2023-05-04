@@ -24,7 +24,7 @@
 #include <LoRa.h>
 #include "board.h"
 #include "telemetry.h"
-#include "webServer.h"
+//#include "webServer.h"
 
 #define MAX_PKT_LENGTH           255
 uint8_t recvBuf[MAX_PKT_LENGTH];
@@ -120,10 +120,12 @@ void setup()
     }
 
     // initialize web server for control configuration and data views
+    /*
     if (!initWebServer()) {
         Serial.println("Starting Web Server failed!");
         while (1);
     }
+    */
 }
 
 void loop()
@@ -218,5 +220,6 @@ void loop()
         Serial.println(F("Bad packet size"));
       }
     }
-  updateDisplay();
+    
+    updateDisplay();
 }
