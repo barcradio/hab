@@ -38,6 +38,7 @@
 
 #define BOARD_LED                   25
 #define LED_ON                      HIGH
+#define LED_OFF                      LOW
 
 #define ADC_PIN                     35
 
@@ -93,7 +94,7 @@ void initBoard()
     gpio_hold_dis(GPIO_NUM_4);
 #endif
     pinMode(BOARD_LED, OUTPUT);
-    digitalWrite(BOARD_LED, LED_ON);
+    digitalWrite(BOARD_LED, LED_OFF);
 #endif
 
 

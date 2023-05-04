@@ -5,8 +5,8 @@
 
 // Update values here to be displayed during startup
 #define showOwner true
-#define myName "Cache Makers"
-#define myPhone "(435) 915-6253"
+#define myName "Russ KE7VFI"
+#define myPhone "(435) 512-8166"
 
 
 // To compile this code for the ground stations ...
@@ -54,9 +54,9 @@ int L3 = L2 + lineHt;
 int L4 = L3 + lineHt;
 
 void updateDisplay() {
-  start = micros();
-  if ((start - finished)>=1000000){ // check for 1 second passed
-    finished = finished + 1000000; //
+  start = millis();
+  if ((start - finished)>=1000){ // check for 1 second passed
+    finished = finished + 1000; //
     elapsed = elapsed+1;
     //Serial.println(elapsed);
   }
