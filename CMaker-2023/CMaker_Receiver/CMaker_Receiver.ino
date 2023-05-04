@@ -31,7 +31,7 @@ uint8_t recvBuf[MAX_PKT_LENGTH];
 uint8_t len = sizeof(recvBuf);
 int recvLen = 0;
 
-unsigned long start, finished, elapsed=-1;
+unsigned long start, finished, elapsed;
 int page = 0;
 
 char dbuf[256]; // display buffer
@@ -220,5 +220,6 @@ void loop()
         Serial.println(F("Bad packet size"));
       }
     }
+    
     updateDisplay();
 }
