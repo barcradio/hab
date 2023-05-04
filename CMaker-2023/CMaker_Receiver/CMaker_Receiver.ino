@@ -24,12 +24,15 @@
 #include <LoRa.h>
 #include "board.h"
 #include "telemetry.h"
-#include "webServer.h"
+//#include "webServer.h"
 
 #define MAX_PKT_LENGTH           255
 uint8_t recvBuf[MAX_PKT_LENGTH];
 uint8_t len = sizeof(recvBuf);
 int recvLen = 0;
+
+unsigned long start, finished, elapsed=-1;
+int page = 0;
 
 char dbuf[256]; // display buffer
 float m2ft = 3.28084; // convert meters to feet
@@ -50,7 +53,21 @@ int L2 = L1 + lineHt;
 int L3 = L2 + lineHt;
 int L4 = L3 + lineHt;
 
-void updateDisplay(int page) {
+void updateDisplay() {
+  start = micros();
+  if ((start - finished)>=1000000){ // check for 1 second passed
+    finished = finished + 1000000; //
+    elapsed = elapsed+1;
+    //Serial.println(elapsed);
+  }
+
+  if(elapsed>=4) { // If more than 4 seconds have passed, show location screen
+    page=2;
+  }
+  else{
+    page=1;
+  }
+
   if (page == 0) {
     u8g2->clearBuffer();
     snprintf(dbuf, sizeof(dbuf), "Received: %d", ++packetCount);
@@ -64,9 +81,9 @@ void updateDisplay(int page) {
     u8g2->sendBuffer();
   } else if (page == 1) {
     u8g2->clearBuffer();
-    snprintf(dbuf, sizeof(dbuf), "Received: %d", ++packetCount);
+    snprintf(dbuf, sizeof(dbuf), "BATT: %.2f Volts", telemetry.vBatt);
     u8g2->drawStr(0, L1, dbuf);
-    getAltString();
+    snprintf(dbuf, sizeof(dbuf), "B_TEMP: %.1f F", C2F(telemetry.tempBatt));
     u8g2->drawStr(0, L2, dbuf);
     snprintf(dbuf, sizeof(dbuf), "SPEED: %.0f MPH", telemetry.gpsspeed * kph2mph);
     u8g2->drawStr(0, L3, dbuf);
@@ -75,13 +92,13 @@ void updateDisplay(int page) {
     u8g2->sendBuffer();
   } else if (page == 2) {
     u8g2->clearBuffer();
-    snprintf(dbuf, sizeof(dbuf), "LAT: %0.6f", telemetry.gpslat);
+    snprintf(dbuf, sizeof(dbuf), "ELAPSED: %d", elapsed);
     u8g2->drawStr(0, L1, dbuf);
-    snprintf(dbuf, sizeof(dbuf), "LON: %0.6f", telemetry.gpslon);
+    snprintf(dbuf, sizeof(dbuf), "LAT: %0.6f", telemetry.gpslat);
     u8g2->drawStr(0, L2, dbuf);
-    snprintf(dbuf, sizeof(dbuf), "BATT: %.2f Volts", telemetry.vBatt);
+    snprintf(dbuf, sizeof(dbuf), "LON: %0.6f", telemetry.gpslon);
     u8g2->drawStr(0, L3, dbuf);
-    snprintf(dbuf, sizeof(dbuf), "B_TEMP: %.1f F", C2F(telemetry.tempBatt));
+    getAltString();
     u8g2->drawStr(0, L4, dbuf);
     u8g2->sendBuffer();
   }
@@ -103,51 +120,55 @@ void setup()
     }
 
     // initialize web server for control configuration and data views
+    /*
     if (!initWebServer()) {
         Serial.println("Starting Web Server failed!");
         while (1);
     }
+    */
 }
 
 void loop()
-{
+{    
     // try to parse packet
     int packetSize = LoRa.parsePacket();
     if (packetSize) {
-        // received a packet
-        recvLen = 0;
-        while (LoRa.available()) {
-            recvBuf[recvLen++] = (uint8_t)LoRa.read();
-        }
+      // received a packet
+      recvLen = 0;
+      while (LoRa.available()) {
+          recvBuf[recvLen++] = (uint8_t)LoRa.read();
+      }
 
-        Serial.print("Received packet with ");
-        Serial.print(recvLen);
-        Serial.println(" bytes");
+      Serial.print("Received packet with ");
+      Serial.print(recvLen);
+      Serial.println(" bytes");
+      
+      // print RSSI (Received Signal Strength Indicator) of packet
+      Serial.print("\tRSSI = ");
+      Serial.println(LoRa.packetRssi());
+      // print SNR (signal to noise ratio) of packet
+      Serial.print("\tSNR = ");
+      Serial.print(LoRa.packetSnr());
+      Serial.println(" db");
+
+      Serial.print("Size of expected telemetry is ");
+      Serial.print(sizeof(Telemetry));
+      Serial.println(" bytes");
+
+      if (recvLen == sizeof(Telemetry)) {
+        // Copy the received buffer values directly into the Telemetry data structure
+        memcpy(&telemetry, recvBuf, sizeof(Telemetry));
+
+        checksum = calculateTelemetryChecksum(&telemetry);
+
+        Serial.print("Calculated Checksum: ");
+        Serial.println(checksum);
         
-        // print RSSI (Received Signal Strength Indicator) of packet
-        Serial.print("\tRSSI = ");
-        Serial.println(LoRa.packetRssi());
-        // print SNR (signal to noise ratio) of packet
-        Serial.print("\tSNR = ");
-        Serial.print(LoRa.packetSnr());
-        Serial.println(" db");
+        Serial.print("  Received Checksum: ");
+        Serial.println(telemetry.checksum);
+        
+        if (checksum == telemetry.checksum) {
 
-        Serial.print("Size of expected telemetry is ");
-        Serial.print(sizeof(Telemetry));
-        Serial.println(" bytes");
-
-        if (recvLen == sizeof(Telemetry)) {
-          // Copy the received buffer values directly into the Telemetry data structure
-          memcpy(&telemetry, recvBuf, sizeof(Telemetry));
-
-          checksum = calculateTelemetryChecksum(&telemetry);
-
-          Serial.print("Calculated Checksum: ");
-          Serial.println(checksum);
-          
-          Serial.print("  Received Checksum: ");
-          Serial.println(telemetry.checksum);
-          
           Serial.println("-----DATA--------------");
           Serial.print("  ID: ");
           Serial.println(telemetry.id, HEX);
@@ -183,13 +204,21 @@ void loop()
 
           Serial.println("-----------------------\n");
           
-          if (checksum == telemetry.checksum) {
-            updateWebserverData();
-          }
+          // Reset timer
+          elapsed = 0;
 
-          updateDisplay(1);
-          delay(5000);
-          updateDisplay(2);
+          //updateWebserverData();
+        
         }
+        else {
+          // uh oh! skip a bad value
+          Serial.println(F("Bad checksum value"));
+        }
+      }
+      else {
+      // strange, the packet wasn't as large as we expect it to be
+        Serial.println(F("Bad packet size"));
+      }
     }
+    updateDisplay();
 }
