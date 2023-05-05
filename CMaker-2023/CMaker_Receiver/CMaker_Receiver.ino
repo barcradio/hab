@@ -5,8 +5,8 @@
 
 // Update values here to be displayed during startup
 #define showOwner true
-#define myName "Russ KE7VFI"
-#define myPhone "(435) 512-8166"
+#define myName "Cache Makers"
+#define myPhone "(435) 915-6253"
 
 
 // To compile this code for the ground stations ...
