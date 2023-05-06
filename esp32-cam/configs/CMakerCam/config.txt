@@ -1,6 +1,6 @@
-CMakerCam75  // camera name
-11  // framesize 11 is hd 720p 1280x720 - for ov2640 camera 8=vga, 9=svga, 10=xga, 11=hd, 12=sxga, 13=uxga - for ov5640 camera add 14=fhd, 17=qxga, 18=qhd, 21=qsxga
-15  // quality 0-63, lower the better, 10 good start, must be higher than "quality config"
+CMakerCam  // camera name
+13  // framesize 11 is hd 720p 1280x720 - for ov2640 camera 8=vga, 9=svga, 10=xga, 11=hd, 12=sxga, 13=uxga - for ov5640 camera add 14=fhd, 17=qxga, 18=qhd, 21=qsxga
+10  // quality 0-63, lower the better, 10 good start, must be higher than "quality config"
 13  // frame config - must be equal or higher than framesize
 5  // quality config - high q 0..5, med q 6..10, low q 11+
 3  // buffers - 1 is half speed of 3
@@ -10,10 +10,10 @@ CMakerCam75  // camera name
 0  // streamdelay - ms between streaming frames
 5  // 0 no internet, 1 get time then shutoff, 2 streaming, using wifiman, 3 to use ssid below, ground gpio 13 to enable internet, 4 to use ssid below, ground gpio 13 to shut off
 MST7MDT,M3.2.0/2:00:00,M11.1.0/2:00:00  // timezone
-BTECH-Public  // ssid name
-redtwizzlers  // ssid password
+EveryDayImBufferin  // ssid name
+One LAN to rule them all  // ssid password
 ~~~~~~~~~~~~~
-//Pixel_5364  // ssid name
+//Pixel_5364 // ssid name
 //795cu99knt5iqcq  // ssid password
 
 Lines above are rigid - do not delete lines, must have 2 spaces after the number or string

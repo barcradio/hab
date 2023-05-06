@@ -480,9 +480,6 @@ static void config_camera() {
 
   sensor_t * ss = esp_camera_sensor_get();
 
-  ///ss->set_hmirror(ss, 1);        // 0 = disable , 1 = enable
-  ///ss->set_vflip(ss, 1);          // 0 = disable , 1 = enable
-
   Serial.printf("\nCamera started correctly, Type is %x (hex) of 9650, 7725, 2640, 3660, 5640\n\n", ss->id.PID);
 
   if (ss->id.PID == OV5640_PID ) {
@@ -495,8 +492,27 @@ static void config_camera() {
   ss->set_quality(ss, quality);
   ss->set_framesize(ss, (framesize_t)framesize);
 
-  ss->set_brightness(ss, 1);  //up the blightness just a bit
-  ss->set_saturation(ss, -2); //lower the saturation
+  ss->set_brightness(ss, 0);     // -2 to 2  //up the blightness just a bit
+  ss->set_contrast(ss, 0);       // -2 to 2  //lower the saturation
+  ss->set_saturation(ss, 0);     // -2 to 2
+  ss->set_special_effect(ss, 0); // 0 to 6 (0 - No Effect, 1 - Negative, 2 - Grayscale, 3 - Red Tint, 4 - Green Tint, 5 - Blue Tint, 6 - Sepia)
+  ss->set_whitebal(ss, 1);       // 0 = disable , 1 = enable
+  ss->set_awb_gain(ss, 1);       // 0 = disable , 1 = enable
+  ss->set_wb_mode(ss, 0);        // 0 to 4 - if awb_gain enabled (0 - Auto, 1 - Sunny, 2 - Cloudy, 3 - Office, 4 - Home)
+  ss->set_exposure_ctrl(ss, 1);  // 0 = disable , 1 = enable
+  ss->set_aec2(ss, 0);           // 0 = disable , 1 = enable
+  ss->set_ae_level(ss, 0);       // -2 to 2
+  ss->set_aec_value(ss, 300);    // 0 to 1200
+  ss->set_gain_ctrl(ss, 1);      // 0 = disable , 1 = enable
+  ss->set_agc_gain(ss, 0);       // 0 to 30
+  ss->set_gainceiling(ss, (gainceiling_t)0);  // 0 to 6
+  ss->set_bpc(ss, 0);            // 0 = disable , 1 = enable
+  ss->set_wpc(ss, 1);            // 0 = disable , 1 = enable
+  ss->set_raw_gma(ss, 1);        // 0 = disable , 1 = enable
+  ss->set_lenc(ss, 1);           // 0 = disable , 1 = enable
+  ss->set_vflip(ss, 0);          // 0 = disable , 1 = enable
+  ss->set_dcw(ss, 1);            // 0 = disable , 1 = enable
+  ss->set_colorbar(ss, 0);       // 0 = disable , 1 = enable
 
   delay(500);
   for (int j = 0; j < 10; j++) {
